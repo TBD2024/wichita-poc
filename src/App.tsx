@@ -17,8 +17,6 @@ function App() {
       <h1>Psyborg</h1>
       <h4>"The easiest way to boost your productivity when using generative AI."</h4>
 
-      <p>Click on the Tauri, Vite, and React logos to learn more.</p>
-
       <form
         className="row"
         onSubmit={(e) => {

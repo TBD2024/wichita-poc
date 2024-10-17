@@ -1,5 +1,6 @@
 use ollama_rs::{generation::completion::request::GenerationRequest, Ollama};
-
+mod constants;
+use constants::PROMPT_CONTEXT;
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 #[tauri::command]
@@ -13,7 +14,10 @@ async fn prompt_enhancer(prompt: &str) -> Result<String, String> {
     let ollama = Ollama::default();
     let model = "qwen:0.5b".to_string();
 
-    let res = ollama.generate(GenerationRequest::new(model, prompt.to_string())).await;
+    let mut request = GenerationRequest::new(model, prompt.to_string());
+    request = request.system(PROMPT_CONTEXT.to_string());
+
+    let res = ollama.generate(request).await;
     match res {
         Ok(response) => {
             return Ok(response.response);
