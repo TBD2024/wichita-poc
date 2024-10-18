@@ -49,8 +49,11 @@ import {
   HomeIcon,
   XMarkIcon,
   Cog6ToothIcon,
-  PencilSquareIcon
+  PencilSquareIcon,
 } from "@heroicons/react/24/outline";
+import { Button } from "./components/button";
+import { Field, Label } from "./components/fieldset";
+import { Textarea } from "./components/textarea";
 
 const navigation = [
   { name: "Home", href: "#", icon: HomeIcon, current: true },
@@ -63,6 +66,15 @@ function classNames(...classes: string[]) {
 
 export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [prompt, setPrompt] = useState("");
+  const [enhancedPrompt, setEnhancedPrompt] = useState("");
+
+  async function enhancePrompt() {
+    setSubmitting(true);
+    setEnhancedPrompt(await invoke("prompt_enhancer", { prompt }));
+    setSubmitting(false);
+  }
 
   return (
     <>
@@ -101,8 +113,8 @@ export default function App() {
               <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-900 px-6 pb-2 ring-1 ring-white/10">
                 <div className="flex h-16 shrink-0 items-center">
                   <img
-                    alt="Your Company"
-                    src="https://tailwindui.com/plus/img/logos/mark.svg?color=indigo&shade=500"
+                    alt="Psyborg AI"
+                    src="psyborg_logo2.png"
                     className="h-8 w-auto"
                   />
                 </div>
@@ -145,7 +157,7 @@ export default function App() {
             <div className="flex shrink-0 items-center">
               <img
                 alt="Your Company"
-                src="psyborg_logo.png"
+                src="psyborg_logo2.png"
                 className="h-15 w-auto"
               />
             </div>
@@ -214,7 +226,48 @@ export default function App() {
         </div>
 
         <main className="py-10 lg:pl-72">
-          <div className="px-4 sm:px-6 lg:px-8">{/* Your content */}</div>
+          <div className="px-4 sm:px-6 lg:px-8">
+            <div className="divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow text-black">
+              <div className="px-4 py-5 sm:px-6">Prompt Enhancer</div>
+              <form
+                className="text-black"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  enhancePrompt();
+                }}
+              >
+                <div className="px-4 py-5 sm:p-6 text-black">
+                  <Field>
+                    <Label>Prompt</Label>
+                    <Textarea
+                      className="text-black border border-black rounded-md"
+                      name="prompt"
+                      onChange={(e) => setPrompt(e.target.value)}
+                    />
+                  </Field>
+                </div>
+                <div className="px-4 py-4 sm:px-6">
+                  <Button
+                    className="cursor-pointer"
+                    type="submit"
+                    disabled={submitting}
+                  >
+                    {submitting ? (
+                      <Cog6ToothIcon className="w-6 h-6 animate-spin text-white" />
+                    ) : (
+                      "Enhance Prompt"
+                    )}
+                  </Button>
+                </div>
+              </form>
+            </div>
+
+            {/* Display enhanced prompt */}
+            <div className="mt-6 text-black">
+              <h2 className="text-lg font-semibold">Enhanced Prompt:</h2>
+              <p className="mt-2 text-gray-500">{enhancedPrompt}</p>
+            </div>
+          </div>
         </main>
       </div>
     </>
