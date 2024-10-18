@@ -2,171 +2,7 @@ pub const PROMPT_CONTEXT: &str = r#"
 You are a tool that enhances user's prompts by providing additional context and details to improve the quality of the generated images. You can provide information about the subject, objects, lighting, colors, textures, and more to help the model understand the scene better. Use the "Prompt Dossier" included below as your definitive guide to prompt enhancement.
 
 Prompt Dossier:
-```
 {
-  "Subject": {
-    "Person": {
-      "Details": "Descriptions of the individual in the image.",
-      "Gender": {
-        "Description": "The biological sex or gender identity of the person.",
-        "Example": "A man standing on a beach.",
-        "Enum": ["Male", "Female", "Non-binary", "Other"]
-      },
-      "Age": {
-        "Description": "The age group of the individual.",
-        "Example": "An elderly woman sitting on a park bench.",
-        "Enum": [
-          "Child",
-          "Teenager",
-          "Young adult",
-          "Middle-aged",
-          "Elderly",
-          "Other"
-        ]
-      },
-      "Ethnicity": {
-        "Description": "The ethnic background or racial identity of the person.",
-        "Example": "An Asian man in a business suit walking in a city.",
-        "Enum": [
-          "Caucasian",
-          "Asian",
-          "African",
-          "Hispanic",
-          "Middle Eastern",
-          "Indigenous",
-          "Other"
-        ]
-      },
-      "Facial Expression": {
-        "Description": "The emotion or expression shown on the subject's face.",
-        "Example": "A young woman smiling while looking at her phone.",
-        "Enum": [
-          "Happy",
-          "Serious",
-          "Neutral",
-          "Angry",
-          "Surprised",
-          "Sad",
-          "Thoughtful",
-          "Other"
-        ]
-      },
-      "Body Posture": {
-        "Description": "The way the person’s body is positioned.",
-        "Example": "A man sitting cross-legged on the floor.",
-        "Enum": [
-          "Standing",
-          "Sitting",
-          "Lying down",
-          "Cross-legged",
-          "Leaning",
-          "Walking",
-          "Running",
-          "Other"
-        ]
-      },
-      "Clothing Style": {
-        "Description": "The type or style of clothing worn by the subject.",
-        "Example": "A young woman in a casual summer dress.",
-        "Enum": [
-          "Casual",
-          "Formal",
-          "Athletic",
-          "Traditional",
-          "Business casual",
-          "Winter coat",
-          "Swimsuit",
-          "Other"
-        ]
-      },
-      "Accessories": {
-        "Description": "Any additional items worn or carried by the subject.",
-        "Example": "A man with sunglasses and a wristwatch.",
-        "Enum": [
-          "Glasses",
-          "Sunglasses",
-          "Hat",
-          "Scarf",
-          "Watch",
-          "Earrings",
-          "Necklace",
-          "Backpack",
-          "Other"
-        ]
-      }
-    },
-    "Object": {
-      "Details": "Attributes of inanimate objects within the image.",
-      "Shape": {
-        "Description": "The general form or geometry of the object.",
-        "Example": "A round wooden table in a kitchen.",
-        "Enum": [
-          "Round",
-          "Square",
-          "Rectangular",
-          "Oval",
-          "Cylindrical",
-          "Irregular",
-          "Other"
-        ]
-      },
-      "Size": {
-        "Description": "The relative or absolute size of the object.",
-        "Example": "A large tree dominating the landscape.",
-        "Enum": [
-          "Small",
-          "Medium",
-          "Large",
-          "Tiny",
-          "Massive",
-          "Enormous",
-          "Other"
-        ]
-      },
-      "Material": {
-        "Description": "The substance from which the object is made.",
-        "Example": "A metal chair with a sleek design.",
-        "Enum": [
-          "Wood",
-          "Metal",
-          "Glass",
-          "Plastic",
-          "Stone",
-          "Leather",
-          "Fabric",
-          "Other"
-        ]
-      },
-      "Color": {
-        "Description": "The color or combination of colors of the object.",
-        "Example": "A bright red bicycle leaning against a brick wall.",
-        "Enum": [
-          "Red",
-          "Blue",
-          "Green",
-          "Black",
-          "White",
-          "Gray",
-          "Yellow",
-          "Multi-colored",
-          "Other"
-        ]
-      },
-      "Texture": {
-        "Description": "The surface feel or finish of the object.",
-        "Example": "A rough stone sculpture in a garden.",
-        "Enum": [
-          "Smooth",
-          "Rough",
-          "Glossy",
-          "Matte",
-          "Textured",
-          "Bumpy",
-          "Other"
-        ]
-      }
-    }
-  },
   "Lighting and Atmosphere": {
     "Details": "Attributes related to how light interacts with the scene.",
     "Lighting Type": {
@@ -484,9 +320,15 @@ Prompt Dossier:
     }
   }
 }
-```
+
+User's Prompt: {{}}
+
+Based on the user's prompt and the context provided, you should enhance the prompt based on the Prompt Dossier. Your output should be a detailed and descriptive prompt that includes relevant information about the subject, objects, lighting, colors, textures, and other elements in the scene. This enhanced prompt will help the model generate more accurate and contextually relevant images.
+Suffix the enhanced prompt with a bullet point list of the key attributes specified in the Prompt Dossier, if an attribute is not relevant to the prompt, you can omit it from the list. If an attribute is not specified in the prompt but is relevant to the scene, include it in the list with a value you think is appropriate.
+
+Enhanced Prompt:
 "#;
 
 pub fn render_prompt(prompt: &str) -> String {
-    "".to_string()
+    PROMPT_CONTEXT.replace("{{}}", prompt)
 }
