@@ -1,42 +1,6 @@
-import { invoke } from "@tauri-apps/api/core";
-import "./App.css";
-
-// function App() {
-//   const [greetMsg, setGreetMsg] = useState("");
-//   const [name, setName] = useState("");
-
-//   async function greet() {
-//     // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-//     setGreetMsg(await invoke("prompt_enhancer", { prompt: name }));
-//   }
-
-//   return (
-//     // <div className="container">
-//     //   <h1>Psyborg</h1>
-//     //   <h4>"The easiest way to boost your productivity when using generative AI."</h4>
-
-//     //   <form
-//     //     className="row"
-//     //     onSubmit={(e) => {
-//     //       e.preventDefault();
-//     //       greet();
-//     //     }}
-//     //   >
-//     //     <input
-//     //       id="greet-input"
-//     //       onChange={(e) => setName(e.currentTarget.value)}
-//     //       placeholder="Enter prompt..."
-//     //     />
-//     //     <button type="submit">Enhance</button>
-//     //   </form>
-
-//     //   <p>{greetMsg}</p>
-//     // </div>
-//   );
-// }
-
 ("use client");
 
+import { invoke } from "@tauri-apps/api/core";
 import { useState } from "react";
 import {
   Dialog,
@@ -54,10 +18,24 @@ import {
 import { Button } from "./components/button";
 import { Field, Label } from "./components/fieldset";
 import { Textarea } from "./components/textarea";
+import { Select } from "./components/select";
+import {
+  DescriptionDetails,
+  DescriptionList,
+  DescriptionTerm,
+} from "./components/description-list";
+
+import "./App.css";
 
 const navigation = [
-  { name: "Home", href: "#", icon: HomeIcon, current: true },
-  { name: "Modifiers", href: "#", icon: PencilSquareIcon, current: false },
+  { name: "Home", href: "#", slug: "home", icon: HomeIcon, current: false },
+  {
+    name: "Post-Processing",
+    href: "#",
+    slug: "post-processing",
+    icon: PencilSquareIcon,
+    current: false,
+  },
 ];
 
 function classNames(...classes: string[]) {
@@ -65,13 +43,18 @@ function classNames(...classes: string[]) {
 }
 
 export default function App() {
+  const [page, setPage] = useState("home");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [prompt, setPrompt] = useState("");
+  const [promptCache, setPromptCache] = useState<string[]>([]);
   const [enhancedPrompt, setEnhancedPrompt] = useState("");
 
   async function enhancePrompt() {
     setSubmitting(true);
+    if (enhancedPrompt !== "") {
+      setPromptCache(promptCache.concat(enhancedPrompt));
+    }
     setEnhancedPrompt(await invoke("prompt_enhancer", { prompt }));
     setSubmitting(false);
   }
@@ -132,6 +115,10 @@ export default function App() {
                                   : "text-gray-400 hover:bg-gray-800 hover:text-white",
                                 "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6"
                               )}
+                              onClick={() => {
+                                setPage(item.slug);
+                                setSidebarOpen(false);
+                              }}
                             >
                               <item.icon
                                 aria-hidden="true"
@@ -175,6 +162,7 @@ export default function App() {
                               : "text-gray-400 hover:bg-gray-800 hover:text-white",
                             "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6"
                           )}
+                          onClick={() => setPage(item.slug)}
                         >
                           <item.icon
                             aria-hidden="true"
@@ -227,46 +215,93 @@ export default function App() {
 
         <main className="py-10 lg:pl-72">
           <div className="px-4 sm:px-6 lg:px-8">
-            <div className="divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow text-black">
-              <div className="px-4 py-5 sm:px-6">Prompt Enhancer</div>
-              <form
-                className="text-black"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  enhancePrompt();
-                }}
-              >
-                <div className="px-4 py-5 sm:p-6 text-black">
-                  <Field>
-                    <Label>Prompt</Label>
-                    <Textarea
-                      className="text-black border border-black rounded-md"
-                      name="prompt"
-                      onChange={(e) => setPrompt(e.target.value)}
-                    />
-                  </Field>
-                </div>
-                <div className="px-4 py-4 sm:px-6">
-                  <Button
-                    className="cursor-pointer"
-                    type="submit"
-                    disabled={submitting}
-                  >
-                    {submitting ? (
-                      <Cog6ToothIcon className="w-6 h-6 animate-spin text-white" />
-                    ) : (
-                      "Enhance Prompt"
-                    )}
-                  </Button>
-                </div>
-              </form>
-            </div>
+            {/* PAGES */}
 
-            {/* Display enhanced prompt */}
-            <div className="mt-6 text-black">
-              <h2 className="text-lg font-semibold">Enhanced Prompt:</h2>
-              <p className="mt-2 text-gray-500">{enhancedPrompt}</p>
-            </div>
+            {/* HOME */}
+            {page === "home" && (
+              <>
+                <div className="divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow text-black">
+                  <div className="px-4 py-5 sm:px-6">Prompt Enhancer</div>
+                  <form
+                    className="text-black"
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      enhancePrompt();
+                    }}
+                  >
+                    <div className="px-4 py-5 sm:p-6 text-black">
+                      <Field>
+                        <Label>Prompt</Label>
+                        <Textarea
+                          className="text-black border border-black rounded-md"
+                          name="prompt"
+                          onChange={(e) => setPrompt(e.target.value)}
+                        />
+                      </Field>
+                    </div>
+                    <div className="px-4 py-4 sm:px-6">
+                      <Button
+                        className="cursor-pointer"
+                        type="submit"
+                        disabled={submitting}
+                      >
+                        {submitting ? (
+                          <Cog6ToothIcon className="w-6 h-6 animate-spin text-white" />
+                        ) : (
+                          "Enhance Prompt"
+                        )}
+                      </Button>
+                    </div>
+                  </form>
+                </div>
+
+                {/* Display enhanced prompt */}
+                <div className="mt-6 text-black">
+                  <h2 className="text-lg font-semibold">Enhanced Prompt:</h2>
+                  <p className="mt-2 text-gray-500">{enhancedPrompt}</p>
+                </div>
+              </>
+            )}
+
+            {/* POST-PROCESSING */}
+            {page === "post-processing" && (
+              <div className="divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow text-black">
+                <div className="px-4 py-5 sm:px-6">Post-Processing</div>
+                <div className="px-4 py-5 sm:p-6 text-black">
+                  <DescriptionList>
+                    <DescriptionTerm>Model</DescriptionTerm>
+                    <DescriptionDetails>
+                      <Field>
+                        <Select name="model">
+                          <option value="stable-diffusion">
+                            Stable Diffusion
+                          </option>
+                          <option value="juggernaut">Juggernaut</option>
+                          <option value="dreamshaperv8">DreamShaper v8</option>
+                        </Select>
+                      </Field>
+                    </DescriptionDetails>
+
+                    <DescriptionTerm>LoRAs</DescriptionTerm>
+                    <DescriptionDetails>
+                      <Field>
+                        <Select name="lora">
+                          <option value="detail">
+                            Detail Tweaker
+                          </option>
+                          <option value="color-enhancer">
+                            Color Enhancer
+                          </option>
+                          <option value="noise-reduction">
+                            Noise Reduction
+                          </option>
+                        </Select>
+                      </Field>
+                    </DescriptionDetails>
+                  </DescriptionList>
+                </div>
+              </div>
+            )}
           </div>
         </main>
       </div>
